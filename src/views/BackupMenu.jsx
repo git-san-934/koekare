@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { exportEvents, importEvents, BackupError } from '../store/backup.js'
 import './BackupMenu.css'
 
-export function BackupMenu({ onClose, onImported, onShowAll }) {
+export function BackupMenu({ onClose, onImported }) {
   const [message, setMessage] = useState(null)
   const [error, setError] = useState(null)
 
@@ -49,12 +49,6 @@ export function BackupMenu({ onClose, onImported, onShowAll }) {
         </button>
         <h1 className="backup-menu__heading">メニュー</h1>
       </header>
-
-      <section className="backup-menu__section">
-        <button type="button" className="backup-menu__action" onClick={onShowAll}>
-          すべての予定を一覧で見る
-        </button>
-      </section>
 
       <section className="backup-menu__section">
         <h2 className="backup-menu__section-title">データのバックアップ</h2>

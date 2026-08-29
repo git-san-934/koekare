@@ -13,6 +13,7 @@ export function DayView({
   onToday,
   onOpenMonth,
   onOpenMenu,
+  onShowAll,
   onNewEvent,
   onEditEvent,
   onStartVoice,
@@ -62,13 +63,23 @@ export function DayView({
       <footer className="day-view__footer">
         <button
           type="button"
-          className="day-view__add"
-          onClick={onNewEvent}
-          aria-label="手入力で予定を追加"
+          className="day-view__all-btn"
+          onClick={onShowAll}
+          aria-label="すべての予定を一覧で見る"
         >
-          ＋
+          <span aria-hidden="true">📋</span>
         </button>
-        <MicButton disabled={!voiceSupported} onStart={onStartVoice} />
+        <div className="day-view__footer-right">
+          <button
+            type="button"
+            className="day-view__add"
+            onClick={onNewEvent}
+            aria-label="手入力で予定を追加"
+          >
+            ＋
+          </button>
+          <MicButton disabled={!voiceSupported} onStart={onStartVoice} />
+        </div>
       </footer>
     </div>
   )

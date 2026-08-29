@@ -80,11 +80,7 @@ export default function App() {
 
   if (view === 'backup') {
     return (
-      <BackupMenu
-        onClose={() => setView('day')}
-        onImported={reload}
-        onShowAll={() => setView('all')}
-      />
+      <BackupMenu onClose={() => setView('day')} onImported={reload} />
     )
   }
 
@@ -135,6 +131,7 @@ export default function App() {
           setView('month')
         }}
         onOpenMenu={() => setView('backup')}
+        onShowAll={() => setView('all')}
         onNewEvent={openNewEvent}
         onEditEvent={openEditEvent}
         onStartVoice={() => setRecognizing(true)}

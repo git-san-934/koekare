@@ -55,10 +55,29 @@
 .day-view__footer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-4);
+  justify-content: space-between;
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4) calc(var(--safe-bottom) + var(--space-3));
   border-top: 1px solid var(--color-border);
+}
+
+.day-view__footer-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.day-view__all-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-list-button);
+  color: #ffffff;
+  font-size: 26px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .day-view__add {

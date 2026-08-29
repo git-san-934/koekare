@@ -13,6 +13,7 @@ const baseProps = {
   onToday: vi.fn(),
   onOpenMonth: vi.fn(),
   onOpenMenu: vi.fn(),
+  onShowAll: vi.fn(),
   onNewEvent: vi.fn(),
   onEditEvent: vi.fn(),
   onStartVoice: vi.fn(),
@@ -84,5 +85,12 @@ describe('DayView', () => {
     expect(
       screen.getByRole('button', { name: /音声入力は利用できません/ }),
     ).toBeDisabled()
+  })
+
+  it('一覧ボタンで onShowAll が呼ばれる', async () => {
+    const onShowAll = vi.fn()
+    render(<DayView {...baseProps} onShowAll={onShowAll} />)
+    await userEvent.click(screen.getByRole('button', { name: 'すべての予定を一覧で見る' }))
+    expect(onShowAll).toHaveBeenCalled()
   })
 })
