@@ -30,7 +30,12 @@ export function DayView({
         <button type="button" className="day-view__icon" onClick={onOpenMenu} aria-label="メニュー">
           ☰
         </button>
-        <button type="button" className="day-view__date" onClick={onToday}>
+        <button
+          type="button"
+          className="day-view__date"
+          onClick={onOpenMonth}
+          aria-label="カレンダーで日付を選ぶ"
+        >
           {formatDayHeader(date)}
         </button>
         <button type="button" className="day-view__icon" onClick={onPrevDay} aria-label="前の日">
@@ -42,10 +47,10 @@ export function DayView({
         <button
           type="button"
           className="day-view__icon day-view__month-btn"
-          onClick={onOpenMonth}
-          aria-label="月表示"
+          onClick={onToday}
+          aria-label="今日に移動"
         >
-          月
+          今日
         </button>
       </header>
 

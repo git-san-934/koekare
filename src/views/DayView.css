@@ -34,6 +34,9 @@
 
 .day-view__month-btn {
   margin-left: auto;
+  padding: 0 var(--space-2);
+  font-size: 15px;
+  white-space: nowrap;
 }
 
 .day-view__list {

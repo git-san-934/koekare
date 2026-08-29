@@ -81,6 +81,20 @@ describe('DayView', () => {
     )
   })
 
+  it('日付をタップすると月表示（onOpenMonth）が開く', async () => {
+    const onOpenMonth = vi.fn()
+    render(<DayView {...baseProps} onOpenMonth={onOpenMonth} />)
+    await userEvent.click(screen.getByRole('button', { name: 'カレンダーで日付を選ぶ' }))
+    expect(onOpenMonth).toHaveBeenCalled()
+  })
+
+  it('「今日」ボタンで onToday が呼ばれる', async () => {
+    const onToday = vi.fn()
+    render(<DayView {...baseProps} onToday={onToday} />)
+    await userEvent.click(screen.getByRole('button', { name: '今日に移動' }))
+    expect(onToday).toHaveBeenCalled()
+  })
+
   it('音声非対応ならマイクボタンが無効', () => {
     render(<DayView {...baseProps} voiceSupported={false} />)
     expect(
