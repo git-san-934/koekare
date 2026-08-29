@@ -1,0 +1,33 @@
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.field__label {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+}
+
+.field__input {
+  flex: 1 1 auto;
+  min-height: var(--tap-min);
+  max-width: 60%;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.field__input:disabled {
+  opacity: 0.5;
+}
+
+.field--text .field__input {
+  max-width: 60%;
+  text-align: right;
+}

@@ -1,0 +1,74 @@
+// @vitest-environment jsdom
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { DayView } from './DayView.jsx'
+
+const baseProps = {
+  date: new Date('2026-08-29T00:00:00+09:00'),
+  events: [],
+  loading: false,
+  onPrevDay: vi.fn(),
+  onNextDay: vi.fn(),
+  onToday: vi.fn(),
+  onOpenMonth: vi.fn(),
+  onOpenMenu: vi.fn(),
+  onNewEvent: vi.fn(),
+  onEditEvent: vi.fn(),
+  onStartVoice: vi.fn(),
+  voiceSupported: true,
+}
+
+describe('DayView', () => {
+  it('渡された予定を時刻つきで表示する', () => {
+    render(
+      <DayView
+        {...baseProps}
+        events={[
+          { id: '1', title: '歯医者', startAt: '2026-08-29T09:00:00+09:00', allDay: false },
+          { id: '2', title: '打ち合わせ', startAt: '2026-08-29T15:00:00+09:00', allDay: false },
+        ]}
+      />,
+    )
+    expect(screen.getByText('歯医者')).toBeInTheDocument()
+    expect(screen.getByText('09:00')).toBeInTheDocument()
+    expect(screen.getByText('打ち合わせ')).toBeInTheDocument()
+  })
+
+  it('予定がなければ「予定なし」を表示する', () => {
+    render(<DayView {...baseProps} events={[]} />)
+    expect(screen.getByText('予定なし')).toBeInTheDocument()
+  })
+
+  it('終日予定は「終日」と表示する', () => {
+    render(
+      <DayView
+        {...baseProps}
+        events={[{ id: '3', title: '旅行', startAt: '2026-08-29T00:00:00+09:00', allDay: true }]}
+      />,
+    )
+    expect(screen.getByText('終日')).toBeInTheDocument()
+  })
+
+  it('予定をタップすると onEditEvent が呼ばれる', async () => {
+    const onEditEvent = vi.fn()
+    render(
+      <DayView
+        {...baseProps}
+        onEditEvent={onEditEvent}
+        events={[{ id: '1', title: '歯医者', startAt: '2026-08-29T09:00:00+09:00', allDay: false }]}
+      />,
+    )
+    await userEvent.click(screen.getByText('歯医者'))
+    expect(onEditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ id: '1', title: '歯医者' }),
+    )
+  })
+
+  it('音声非対応ならマイクボタンが無効', () => {
+    render(<DayView {...baseProps} voiceSupported={false} />)
+    expect(
+      screen.getByRole('button', { name: /音声入力は利用できません/ }),
+    ).toBeDisabled()
+  })
+})

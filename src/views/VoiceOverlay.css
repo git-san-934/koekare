@@ -1,0 +1,62 @@
+.voice-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: calc(var(--safe-top) + var(--space-4)) var(--space-4)
+    calc(var(--safe-bottom) + var(--space-6));
+  background: color-mix(in srgb, var(--color-bg) 96%, var(--color-primary));
+  color: var(--color-text);
+}
+
+.voice-overlay__cancel {
+  align-self: flex-end;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  border: none;
+  background: transparent;
+  font-size: 20px;
+}
+
+.voice-overlay__body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.voice-overlay__status {
+  color: var(--color-text-muted);
+}
+
+.voice-overlay__transcript {
+  font-size: 20px;
+  font-weight: 600;
+  min-height: 1.5em;
+}
+
+.voice-overlay__error {
+  color: var(--color-danger);
+  max-width: 20em;
+}
+
+.voice-overlay__manual {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-5);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font-weight: 600;
+}
