@@ -1,20 +1,41 @@
 import { useMemo } from 'react'
 import { useEvents } from '../hooks/useEvents.js'
-import { fromISO, formatTime, formatDateWithYear, formatISODate, formatAllDayLabel } from '../datetime.js'
+import {
+  fromISO,
+  formatTime,
+  formatDateWithYear,
+  formatISODate,
+  formatAllDayLabel,
+  startOfDayLocal,
+  addDays,
+} from '../datetime.js'
 import './AllEventsView.css'
 
+// 予定を日付ごとに割り当てる。複数日にわたる終日予定は、期間中の各日に表示する。
 function groupByDate(events) {
   const map = new Map()
+  const assign = (day, event) => {
+    const key = formatISODate(day)
+    if (!map.has(key)) {
+      map.set(key, { key, label: formatDateWithYear(day), items: [] })
+    }
+    map.get(key).items.push(event)
+  }
+
   for (const event of events) {
-    const key = formatISODate(fromISO(event.startAt))
-    if (!map.has(key)) map.set(key, [])
-    map.get(key).push(event)
+    const startDay = startOfDayLocal(fromISO(event.startAt))
+    if (event.allDay) {
+      // endAt は「最終日の翌日 0:00」（排他的終端）なので 1 日戻す
+      const lastDay = addDays(startOfDayLocal(fromISO(event.endAt)), -1)
+      for (let day = startDay; day.getTime() <= lastDay.getTime(); day = addDays(day, 1)) {
+        assign(day, event)
+      }
+    } else {
+      assign(startDay, event)
+    }
   }
   // events はストアで startAt 昇順なので、Map の挿入順＝日付昇順
-  return [...map.values()].map((dayEvents) => ({
-    label: formatDateWithYear(fromISO(dayEvents[0].startAt)),
-    dayEvents,
-  }))
+  return [...map.values()]
 }
 
 export function AllEventsView({ onClose, onEditEvent }) {
@@ -37,12 +58,12 @@ export function AllEventsView({ onClose, onEditEvent }) {
         <p className="all-events__empty">予定はありません</p>
       ) : (
         <div className="all-events__body">
-          {groups.map(({ label, dayEvents }) => (
-            <section key={label} className="all-events__group">
-              <h2 className="all-events__date">{label}</h2>
+          {groups.map((group) => (
+            <section key={group.key} className="all-events__group">
+              <h2 className="all-events__date">{group.label}</h2>
               <ul className="all-events__list">
-                {dayEvents.map((event) => (
-                  <li key={event.id} className="all-events__item">
+                {group.items.map((event) => (
+                  <li key={`${group.key}-${event.id}`} className="all-events__item">
                     <button
                       type="button"
                       className="all-events__button"

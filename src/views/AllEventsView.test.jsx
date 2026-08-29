@@ -29,6 +29,28 @@ describe('AllEventsView', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(3)
   })
 
+  it('複数日の終日予定は期間中の各日に表示される', async () => {
+    await eventStore.add(
+      {
+        title: '京都旅行',
+        startAt: '2026-09-11T00:00:00+09:00',
+        endAt: '2026-09-14T00:00:00+09:00',
+        allDay: true,
+      },
+      { now },
+    )
+    render(<AllEventsView onClose={vi.fn()} onEditEvent={vi.fn()} />)
+
+    expect(await screen.findByText('全1件')).toBeInTheDocument()
+    expect(screen.getByText('2026年9月11日(金)')).toBeInTheDocument()
+    expect(screen.getByText('2026年9月12日(土)')).toBeInTheDocument()
+    expect(screen.getByText('2026年9月13日(日)')).toBeInTheDocument()
+    expect(screen.queryByText('2026年9月14日(月)')).not.toBeInTheDocument()
+    // 同じ予定が3日ぶん（3項目）表示される
+    expect(screen.getAllByText('京都旅行')).toHaveLength(3)
+    expect(screen.getAllByText('9/11〜9/13')).toHaveLength(3)
+  })
+
   it('予定がなければ「予定はありません」', async () => {
     render(<AllEventsView onClose={vi.fn()} onEditEvent={vi.fn()} />)
     expect(await screen.findByText('予定はありません')).toBeInTheDocument()
