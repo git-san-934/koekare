@@ -8,6 +8,7 @@ import { AllEventsView } from './views/AllEventsView.jsx'
 import { StorageNotice } from './components/StorageNotice.jsx'
 import { useEvents } from './hooks/useEvents.js'
 import { isSpeechSupported } from './speech/speechRecognizer.js'
+import { saveEventsToFile } from './store/backup.js'
 import {
   startOfDayLocal,
   addDays,
@@ -92,6 +93,14 @@ export default function App() {
     setView(formOrigin)
   }
 
+  async function handleExport() {
+    try {
+      await saveEventsToFile()
+    } catch {
+      // ダウンロードに失敗しても操作は継続できる
+    }
+  }
+
   if (view === 'backup') {
     return (
       <BackupMenu onClose={() => setView('day')} onImported={reload} />
@@ -146,6 +155,7 @@ export default function App() {
         }}
         onOpenMenu={() => setView('backup')}
         onShowAll={() => setView('all')}
+        onExport={handleExport}
         onNewEvent={openNewEvent}
         onEditEvent={openEditEvent}
         onStartVoice={() => setRecognizing(true)}

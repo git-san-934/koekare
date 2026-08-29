@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { exportEvents, importEvents, BackupError } from '../store/backup.js'
+import { saveEventsToFile, importEvents, BackupError } from '../store/backup.js'
 import './BackupMenu.css'
 
 export function BackupMenu({ onClose, onImported }) {
@@ -10,15 +10,7 @@ export function BackupMenu({ onClose, onImported }) {
     setMessage(null)
     setError(null)
     try {
-      const { blob, filename } = await exportEvents()
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = filename
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(url)
+      await saveEventsToFile()
       setMessage('予定を書き出しました')
     } catch {
       setError('書き出しに失敗しました')

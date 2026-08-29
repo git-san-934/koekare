@@ -14,6 +14,7 @@ const baseProps = {
   onOpenMonth: vi.fn(),
   onOpenMenu: vi.fn(),
   onShowAll: vi.fn(),
+  onExport: vi.fn(),
   onNewEvent: vi.fn(),
   onEditEvent: vi.fn(),
   onStartVoice: vi.fn(),
@@ -92,6 +93,13 @@ describe('DayView', () => {
     render(<DayView {...baseProps} onShowAll={onShowAll} />)
     await userEvent.click(screen.getByRole('button', { name: 'すべての予定を一覧で見る' }))
     expect(onShowAll).toHaveBeenCalled()
+  })
+
+  it('書き出しボタンで onExport が呼ばれる', async () => {
+    const onExport = vi.fn()
+    render(<DayView {...baseProps} onExport={onExport} />)
+    await userEvent.click(screen.getByRole('button', { name: 'すべての予定をファイルに書き出す' }))
+    expect(onExport).toHaveBeenCalled()
   })
 
   function swipe(el, dx, dy = 0) {

@@ -15,6 +15,7 @@ export function DayView({
   onOpenMonth,
   onOpenMenu,
   onShowAll,
+  onExport,
   onNewEvent,
   onEditEvent,
   onStartVoice,
@@ -72,6 +73,14 @@ export function DayView({
           aria-label="すべての予定を一覧で見る"
         >
           <span aria-hidden="true">📋</span>
+        </button>
+        <button
+          type="button"
+          className="day-view__export-btn"
+          onClick={onExport}
+          aria-label="すべての予定をファイルに書き出す"
+        >
+          <span aria-hidden="true">💾</span>
         </button>
         <div className="day-view__footer-right">
           <button

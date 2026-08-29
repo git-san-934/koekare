@@ -104,6 +104,20 @@ export async function exportEvents() {
   return toDownload(buildBackup(events))
 }
 
+// 全予定を JSON ファイルとしてダウンロードさせる（ブラウザ環境専用）。
+export async function saveEventsToFile() {
+  const { blob, filename } = await exportEvents()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+  return filename
+}
+
 // 同一 id は読み込み側で上書き（merge）。検証失敗時は書き込みゼロ。
 export async function importEvents(text) {
   const events = parseBackup(text)
