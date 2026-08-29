@@ -6,19 +6,20 @@
 
 ---
 
-## 段階1: プロジェクトの土台
+## 段階1: プロジェクトの土台 ✅
 
-- [ ] `npm create vite@latest`（React / JavaScript）相当の構成をリポジトリ直下に作成（`package.json`、`index.html`、`src/main.jsx`、`src/App.jsx`）
-- [ ] 依存追加: `react` `react-dom` / `date-fns` / `idb` / dev: `vite` `@vitejs/plugin-react` `vite-plugin-pwa` `vitest` `@testing-library/react` `@testing-library/user-event` `@testing-library/jest-dom` `jsdom` `fake-indexeddb` `oxlint`
-- [ ] `vite.config.js`: React プラグイン、`base: '/claude-code-book-template/'`（1か所に定数化してコメントで明示）、`vite-plugin-pwa` の雛形
-- [ ] `vitest.config.js` / `vitest.setup.js`（jsdom、`fake-indexeddb/auto`、`jest-dom`）
-- [ ] `.oxlintrc.json`（セミコロンなし・シングルクォート・2スペース）、`package.json` に `dev` / `build` / `preview` / `test` / `lint` スクリプト
-- [ ] `.gitignore`（`node_modules/`、`dist/`、`*.local`）
-- [ ] `index.html`: iOS向けメタ（`viewport-fit=cover`、`apple-mobile-web-app-capable`、`apple-touch-icon` 参照）、`<div id="root">`
-- [ ] `src/App.jsx`: 「日別ビュー」のプレースホルダを表示するだけの初期版
-- [ ] `src/styles/global.css`: リセット、CSSカスタムプロパティ（`--color-*` `--space-*` `--tap-min: 44px`）、safe-area 余白
+- [x] Vite（React / JavaScript）構成をリポジトリ直下に作成（`package.json`、`index.html`、`src/main.jsx`、`src/App.jsx`）
+- [x] 依存追加: `react` `react-dom` / `date-fns` `idb` / dev: `vite` `@vitejs/plugin-react` `vite-plugin-pwa` `vitest` `@testing-library/react` `@testing-library/user-event` `@testing-library/jest-dom` `jsdom` `fake-indexeddb` `oxlint`
+- [x] `vite.config.js`: React プラグイン、`BASE_PATH = '/claude-code-book-template/'`（定数＋コメント）、`vite-plugin-pwa` の雛形
+- [x] `vitest.config.js` / `vitest.setup.js`（jsdom、`fake-indexeddb/auto`、`jest-dom`、`afterEach` で cleanup + DB破棄）
+- [x] `.oxlintrc.json`（react / jsx-a11y プラグイン、`react-in-jsx-scope` 無効）、`package.json` に `dev` / `build` / `preview` / `test` / `test:watch` / `lint` スクリプト
+- [x] `.gitignore`
+- [x] `index.html`: iOS向けメタ（`viewport-fit=cover`、`apple-mobile-web-app-capable`、`apple-touch-icon` 参照）、`<div id="root">`
+- [x] `src/App.jsx`: 画面切り替えの器（プレースホルダ表示）
+- [x] `src/styles/global.css`: リセット、CSSカスタムプロパティ（`--color-*` `--space-*` `--tap-min: 44px`）、safe-area、ダークモード
+- [x] `public/icons/`: 仮アイコン（192 / 512 / maskable / apple-touch-icon）
 
-**段階の完了条件**: `npm run dev` で空の画面が表示される / `npm run build` 成功 / `npm test`（0件でも可）と `npm run lint` がグリーン。
+**段階の完了条件**: ✅ `npm run dev` で画面表示（ブラウザ確認済み、console エラーなし）/ `npm run build` 成功 / `npm test`・`npm run lint` グリーン。
 
 ---
 

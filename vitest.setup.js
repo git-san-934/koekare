@@ -1,14 +1,18 @@
 import 'fake-indexeddb/auto'
 import '@testing-library/jest-dom/vitest'
 import { afterEach } from 'vitest'
-import { cleanup } from '@testing-library/react'
 import { deleteDB } from 'idb'
+import { closeDB, DB_NAME } from './src/store/db.js'
 
-// 各テスト後にReactツリーとIndexedDBを破棄し、テスト間の状態を持ち越さない。
+// 各テスト後にReactツリー（jsdom環境のみ）とIndexedDBを破棄し、状態を持ち越さない。
 afterEach(async () => {
-  cleanup()
+  if (typeof document !== 'undefined') {
+    const { cleanup } = await import('@testing-library/react')
+    cleanup()
+  }
+  await closeDB()
   try {
-    await deleteDB('koekare')
+    await deleteDB(DB_NAME)
   } catch {
     // データベース未作成なら無視
   }
