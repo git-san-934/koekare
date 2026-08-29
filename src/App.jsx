@@ -23,6 +23,8 @@ export default function App() {
   const [monthDate, setMonthDate] = useState(() => startOfDayLocal(new Date()))
   const [draft, setDraft] = useState(null)
   const [recognizing, setRecognizing] = useState(false)
+  // フォームを閉じたときに戻る画面（'day' または 'all'）
+  const [formOrigin, setFormOrigin] = useState('day')
 
   const voiceSupported = useMemo(() => isSpeechSupported(), [])
 
@@ -53,36 +55,41 @@ export default function App() {
 
   const handleParsed = useCallback((parsed) => {
     setRecognizing(false)
+    setFormOrigin('day')
     setDraft({ ...parsed, source: 'voice' })
     setView('form')
   }, [])
 
   function openNewEvent() {
+    setFormOrigin('day')
     setDraft({})
     setView('form')
   }
 
   function openEditEvent(event) {
+    setFormOrigin(view === 'all' ? 'all' : 'day')
     setDraft(event)
     setView('form')
   }
 
   async function handleSaved(saved) {
-    setSelectedDate(startOfDayLocal(fromISO(saved.startAt)))
+    if (formOrigin === 'day') {
+      setSelectedDate(startOfDayLocal(fromISO(saved.startAt)))
+    }
     setDraft(null)
-    setView('day')
+    setView(formOrigin)
     await reload()
   }
 
   async function handleDeleted() {
     setDraft(null)
-    setView('day')
+    setView(formOrigin)
     await reload()
   }
 
   function handleCancel() {
     setDraft(null)
-    setView('day')
+    setView(formOrigin)
   }
 
   if (view === 'backup') {
