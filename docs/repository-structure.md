@@ -32,6 +32,7 @@ koekare/                          # GitHub リポジトリ名（ローカルの�
 │   ├── views/                     # 画面単位コンポーネント（docs/functional-design.md の画面一覧に対応）
 │   │   ├── DayView.jsx            # 日別ビュー（ホーム）
 │   │   ├── MonthView.jsx          # 月別ビュー
+│   │   ├── AllEventsView.jsx      # すべての予定を日付ごとに箇条書き表示
 │   │   ├── EventForm.jsx          # 予定確認フォーム（新規・編集・削除）
 │   │   ├── VoiceOverlay.jsx       # 音声入力オーバーレイ
 │   │   └── BackupMenu.jsx         # メニュー / 書き出し・読み込み

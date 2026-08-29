@@ -71,6 +71,10 @@ export function formatDayHeader(date) {
   return format(date, 'M月d日(EEE)', { locale: ja })
 }
 
+export function formatDateWithYear(date) {
+  return format(date, 'yyyy年M月d日(EEE)', { locale: ja })
+}
+
 export function formatTime(date) {
   return format(date, 'HH:mm')
 }

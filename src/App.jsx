@@ -4,6 +4,7 @@ import { MonthView } from './views/MonthView.jsx'
 import { EventForm } from './views/EventForm.jsx'
 import { VoiceOverlay } from './views/VoiceOverlay.jsx'
 import { BackupMenu } from './views/BackupMenu.jsx'
+import { AllEventsView } from './views/AllEventsView.jsx'
 import { StorageNotice } from './components/StorageNotice.jsx'
 import { useEvents } from './hooks/useEvents.js'
 import { isSpeechSupported } from './speech/speechRecognizer.js'
@@ -78,7 +79,17 @@ export default function App() {
   }
 
   if (view === 'backup') {
-    return <BackupMenu onClose={() => setView('day')} onImported={reload} />
+    return (
+      <BackupMenu
+        onClose={() => setView('day')}
+        onImported={reload}
+        onShowAll={() => setView('all')}
+      />
+    )
+  }
+
+  if (view === 'all') {
+    return <AllEventsView onClose={() => setView('day')} onEditEvent={openEditEvent} />
   }
 
   if (view === 'form') {
