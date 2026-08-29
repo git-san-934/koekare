@@ -7,6 +7,7 @@ export function DayView({
   date,
   events,
   loading,
+  notice,
   onPrevDay,
   onNextDay,
   onToday,
@@ -38,6 +39,8 @@ export function DayView({
           月
         </button>
       </header>
+
+      {notice}
 
       <main className="day-view__list">
         {loading ? (

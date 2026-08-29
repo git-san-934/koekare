@@ -4,6 +4,7 @@ import { MonthView } from './views/MonthView.jsx'
 import { EventForm } from './views/EventForm.jsx'
 import { VoiceOverlay } from './views/VoiceOverlay.jsx'
 import { BackupMenu } from './views/BackupMenu.jsx'
+import { StorageNotice } from './components/StorageNotice.jsx'
 import { useEvents } from './hooks/useEvents.js'
 import { isSpeechSupported } from './speech/speechRecognizer.js'
 import {
@@ -114,6 +115,7 @@ export default function App() {
         date={selectedDate}
         events={events}
         loading={loading}
+        notice={<StorageNotice />}
         onPrevDay={() => setSelectedDate((d) => addDays(d, -1))}
         onNextDay={() => setSelectedDate((d) => addDays(d, 1))}
         onToday={() => setSelectedDate(startOfDayLocal(new Date()))}
