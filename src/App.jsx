@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { DayView } from './views/DayView.jsx'
 import { MonthView } from './views/MonthView.jsx'
 import { EventForm } from './views/EventForm.jsx'
+import { VoiceOverlay } from './views/VoiceOverlay.jsx'
 import { useEvents } from './hooks/useEvents.js'
+import { isSpeechSupported } from './speech/speechRecognizer.js'
 import {
   startOfDayLocal,
   addDays,
@@ -17,6 +19,9 @@ export default function App() {
   const [selectedDate, setSelectedDate] = useState(() => startOfDayLocal(new Date()))
   const [monthDate, setMonthDate] = useState(() => startOfDayLocal(new Date()))
   const [draft, setDraft] = useState(null)
+  const [recognizing, setRecognizing] = useState(false)
+
+  const voiceSupported = useMemo(() => isSpeechSupported(), [])
 
   const range = useMemo(() => {
     if (view === 'month') {
@@ -35,6 +40,12 @@ export default function App() {
     }
     return set
   }, [events])
+
+  const handleParsed = useCallback((parsed) => {
+    setRecognizing(false)
+    setDraft({ ...parsed, source: 'voice' })
+    setView('form')
+  }, [])
 
   function openNewEvent() {
     setDraft({})
@@ -93,22 +104,27 @@ export default function App() {
   }
 
   return (
-    <DayView
-      date={selectedDate}
-      events={events}
-      loading={loading}
-      onPrevDay={() => setSelectedDate((d) => addDays(d, -1))}
-      onNextDay={() => setSelectedDate((d) => addDays(d, 1))}
-      onToday={() => setSelectedDate(startOfDayLocal(new Date()))}
-      onOpenMonth={() => {
-        setMonthDate(selectedDate)
-        setView('month')
-      }}
-      onOpenMenu={() => {}}
-      onNewEvent={openNewEvent}
-      onEditEvent={openEditEvent}
-      onStartVoice={() => {}}
-      voiceSupported={false}
-    />
+    <>
+      <DayView
+        date={selectedDate}
+        events={events}
+        loading={loading}
+        onPrevDay={() => setSelectedDate((d) => addDays(d, -1))}
+        onNextDay={() => setSelectedDate((d) => addDays(d, 1))}
+        onToday={() => setSelectedDate(startOfDayLocal(new Date()))}
+        onOpenMonth={() => {
+          setMonthDate(selectedDate)
+          setView('month')
+        }}
+        onOpenMenu={() => {}}
+        onNewEvent={openNewEvent}
+        onEditEvent={openEditEvent}
+        onStartVoice={() => setRecognizing(true)}
+        voiceSupported={voiceSupported}
+      />
+      {recognizing && (
+        <VoiceOverlay onParsed={handleParsed} onCancel={() => setRecognizing(false)} />
+      )}
+    </>
   )
 }
