@@ -28,6 +28,6 @@
 }
 
 .field--text .field__input {
-  max-width: 60%;
-  text-align: right;
+  max-width: none;
+  text-align: left;
 }
