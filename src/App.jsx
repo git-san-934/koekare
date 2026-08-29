@@ -1,22 +1,72 @@
-import { useState } from 'react'
-
-// 段階1: 画面切り替えの器だけを用意する。中身は後続の段階で実装する。
-const VIEWS = {
-  day: '日別ビュー',
-  month: '月別ビュー',
-  form: '予定確認フォーム',
-  backup: 'バックアップ',
-}
+import { useMemo, useState } from 'react'
+import { DayView } from './views/DayView.jsx'
+import { MonthView } from './views/MonthView.jsx'
+import { useEvents } from './hooks/useEvents.js'
+import {
+  startOfDayLocal,
+  addDays,
+  addMonths,
+  formatISODate,
+  fromISO,
+  monthGridDays,
+} from './datetime.js'
 
 export default function App() {
-  const [view] = useState('day')
+  const [view, setView] = useState('day')
+  const [selectedDate, setSelectedDate] = useState(() => startOfDayLocal(new Date()))
+  const [monthDate, setMonthDate] = useState(() => startOfDayLocal(new Date()))
+
+  const range = useMemo(() => {
+    if (view === 'month') {
+      const grid = monthGridDays(monthDate)
+      return { from: grid[0], to: addDays(grid[grid.length - 1], 1) }
+    }
+    return { from: selectedDate, to: addDays(selectedDate, 1) }
+  }, [view, selectedDate, monthDate])
+
+  const { events, loading } = useEvents(range)
+
+  const daysWithEvents = useMemo(() => {
+    const set = new Set()
+    for (const event of events) {
+      set.add(formatISODate(fromISO(event.startAt)))
+    }
+    return set
+  }, [events])
+
+  if (view === 'month') {
+    return (
+      <MonthView
+        month={monthDate}
+        daysWithEvents={daysWithEvents}
+        onPrevMonth={() => setMonthDate((d) => addMonths(d, -1))}
+        onNextMonth={() => setMonthDate((d) => addMonths(d, 1))}
+        onSelectDate={(day) => {
+          setSelectedDate(startOfDayLocal(day))
+          setView('day')
+        }}
+        onBack={() => setView('day')}
+      />
+    )
+  }
 
   return (
-    <div className="app">
-      <main className="app__main">
-        <h1>コエカレ</h1>
-        <p>{VIEWS[view]}（準備中）</p>
-      </main>
-    </div>
+    <DayView
+      date={selectedDate}
+      events={events}
+      loading={loading}
+      onPrevDay={() => setSelectedDate((d) => addDays(d, -1))}
+      onNextDay={() => setSelectedDate((d) => addDays(d, 1))}
+      onToday={() => setSelectedDate(startOfDayLocal(new Date()))}
+      onOpenMonth={() => {
+        setMonthDate(selectedDate)
+        setView('month')
+      }}
+      onOpenMenu={() => {}}
+      onNewEvent={() => {}}
+      onEditEvent={() => {}}
+      onStartVoice={() => {}}
+      voiceSupported={false}
+    />
   )
 }

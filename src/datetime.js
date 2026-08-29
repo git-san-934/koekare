@@ -6,6 +6,14 @@ import {
   startOfDay,
   addDays as fnsAddDays,
   addMinutes as fnsAddMinutes,
+  addMonths as fnsAddMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameMonth as fnsIsSameMonth,
+  isSameDay as fnsIsSameDay,
   getDay,
   set,
   isValid,
@@ -77,4 +85,23 @@ export function nextOccurrenceOfWeekday(from, weekday, { allowToday = false } = 
 // from 以降の直近の土曜（当日が土曜ならその日）の 0:00。
 export function upcomingSaturday(from) {
   return nextOccurrenceOfWeekday(from, 6, { allowToday: true })
+}
+
+export function addMonths(date, amount) {
+  return fnsAddMonths(date, amount)
+}
+
+export function isSameMonth(a, b) {
+  return fnsIsSameMonth(a, b)
+}
+
+export function isSameDay(a, b) {
+  return fnsIsSameDay(a, b)
+}
+
+// 月別ビューのグリッド（日曜始まり、前後の月の日を含む6週分程度）。
+export function monthGridDays(monthDate) {
+  const start = startOfWeek(startOfMonth(monthDate), { weekStartsOn: 0 })
+  const end = endOfWeek(endOfMonth(monthDate), { weekStartsOn: 0 })
+  return eachDayOfInterval({ start, end })
 }

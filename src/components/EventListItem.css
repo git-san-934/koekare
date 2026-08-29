@@ -1,0 +1,26 @@
+.event-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-2);
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  text-align: left;
+}
+
+.event-item__time {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  min-width: 3.5em;
+}
+
+.event-item__title {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
