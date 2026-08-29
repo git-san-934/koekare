@@ -87,6 +87,26 @@ export function formatISODate(date) {
   return format(date, 'yyyy-MM-dd')
 }
 
+export function formatShortDate(date) {
+  return format(date, 'M/d')
+}
+
+// 終日イベントの日数（endAt は排他的終端）。単日なら 1。
+export function allDaySpanDays(startAtISO, endAtISO) {
+  const start = startOfDay(fromISO(startAtISO))
+  const end = startOfDay(fromISO(endAtISO))
+  const days = Math.round((end.getTime() - start.getTime()) / 86400000)
+  return days >= 1 ? days : 1
+}
+
+// 終日イベントの表示ラベル。単日は「終日」、複数日は「9/12〜9/14」。
+export function formatAllDayLabel(startAtISO, endAtISO) {
+  if (allDaySpanDays(startAtISO, endAtISO) <= 1) return '終日'
+  const first = startOfDay(fromISO(startAtISO))
+  const last = fnsAddDays(startOfDay(fromISO(endAtISO)), -1)
+  return `${format(first, 'M/d')}〜${format(last, 'M/d')}`
+}
+
 // <input type="date"> / <input type="time"> の値と Date の相互変換。
 export function combineDateAndTime(dateStr, timeStr) {
   return parseISO(`${dateStr}T${timeStr}:00`)

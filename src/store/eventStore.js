@@ -32,13 +32,21 @@ export async function get(id) {
   return db.get('events', id)
 }
 
-// range を渡すと by_start インデックスで [from, to) を範囲検索する。
+// range を渡すと [from, to) と「期間が重なる」予定を返す（複数日の終日予定も
+// 各日で拾えるようにするため、単純な開始日時の範囲検索ではなく重なり判定する）。
 // range 省略時は全件を startAt 昇順で返す。
 export async function list({ from, to } = {}) {
   const db = await getDB()
   if (from && to) {
-    const range = IDBKeyRange.bound(toISO(from), toISO(to), false, true)
-    return db.getAllFromIndex('events', 'by_start', range)
+    const fromISO = toISO(from)
+    const toISOValue = toISO(to)
+    // startAt < to の候補を取り、endAt > from で絞る
+    const candidates = await db.getAllFromIndex(
+      'events',
+      'by_start',
+      IDBKeyRange.upperBound(toISOValue, true),
+    )
+    return candidates.filter((event) => event.endAt > fromISO).sort(byStartAsc)
   }
   const all = await db.getAll('events')
   return all.sort(byStartAsc)

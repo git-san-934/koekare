@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useEvents } from '../hooks/useEvents.js'
-import { fromISO, formatTime, formatDateWithYear, formatISODate } from '../datetime.js'
+import { fromISO, formatTime, formatDateWithYear, formatISODate, formatAllDayLabel } from '../datetime.js'
 import './AllEventsView.css'
 
 function groupByDate(events) {
@@ -50,7 +50,7 @@ export function AllEventsView({ onClose, onEditEvent }) {
                     >
                       <span className="all-events__time">
                         {event.allDay
-                          ? '終日'
+                          ? formatAllDayLabel(event.startAt, event.endAt)
                           : `${formatTime(fromISO(event.startAt))}–${formatTime(fromISO(event.endAt))}`}
                       </span>
                       <span className="all-events__title">{event.title}</span>

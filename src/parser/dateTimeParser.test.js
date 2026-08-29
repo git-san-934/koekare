@@ -68,4 +68,13 @@ describe('parseDateTime', () => {
     expect(r.startAt).toBe('2026-08-30T15:00:00+09:00')
     expect(r.title).toBe('会議')
   })
+
+  it('「9月12日から14日京都へ旅行」→ 複数日の終日予定', () => {
+    const r = parseDateTime('9月12日から14日京都へ旅行', opts)
+    expect(r.allDay).toBe(true)
+    expect(r.startAt).toBe('2026-09-12T00:00:00+09:00')
+    // endAt は最終日（14日）の翌日0:00（排他的終端）
+    expect(r.endAt).toBe('2026-09-15T00:00:00+09:00')
+    expect(r.title).toBe('京都へ旅行')
+  })
 })

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { extractDate } from './dateRules.js'
+import { extractDate, extractDateRange } from './dateRules.js'
 import { formatISODate } from '../../datetime.js'
 
 // 2026-08-29 は土曜日
@@ -54,5 +54,32 @@ describe('extractDate', () => {
 
   it('マッチした部分文字列を spans で返す', () => {
     expect(extractDate('明日の会議', { now }).spans).toEqual(['明日'])
+  })
+})
+
+describe('extractDateRange', () => {
+  function range(text) {
+    const r = extractDateRange(text, { now })
+    return r ? [formatISODate(r.start), formatISODate(r.end)] : null
+  }
+
+  it('◯月◯日から◯日（同月）', () => {
+    expect(range('9月12日から14日')).toEqual(['2026-09-12', '2026-09-14'])
+  })
+
+  it('◯月◯日から◯月◯日', () => {
+    expect(range('9月30日から10月2日まで')).toEqual(['2026-09-30', '2026-10-02'])
+  })
+
+  it('◯日から◯日（当月）', () => {
+    expect(range('30日から31日')).toEqual(['2026-08-30', '2026-08-31'])
+  })
+
+  it('〜 区切りも解釈する', () => {
+    expect(range('9月12日〜9月14日')).toEqual(['2026-09-12', '2026-09-14'])
+  })
+
+  it('範囲でなければ null', () => {
+    expect(range('9月12日 会議')).toBe(null)
   })
 })

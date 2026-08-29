@@ -1,13 +1,12 @@
-import { fromISO, formatTime } from '../datetime.js'
+import { fromISO, formatTime, formatAllDayLabel } from '../datetime.js'
 import './EventListItem.css'
 
 export function EventListItem({ event, onClick }) {
-  const start = formatTime(fromISO(event.startAt))
   const timeLabel = event.allDay
-    ? '終日'
+    ? formatAllDayLabel(event.startAt, event.endAt)
     : event.endAt
-      ? `${start}–${formatTime(fromISO(event.endAt))}`
-      : start
+      ? `${formatTime(fromISO(event.startAt))}–${formatTime(fromISO(event.endAt))}`
+      : formatTime(fromISO(event.startAt))
 
   return (
     <li className="event-item">

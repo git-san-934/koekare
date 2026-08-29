@@ -87,3 +87,48 @@ export function extractDate(text, { now }) {
   }
   return { date: null, spans: [] }
 }
+
+const RANGE_SEP = '(?:から|〜|～|~|ー|-|–)'
+
+// month は 1..12 または null（= base の月）。過去日なら翌年 / 翌月に送る。
+function resolveMonthDay(base, month, day, { allowPast }) {
+  const monthIndex = month !== null ? month - 1 : base.getMonth()
+  let candidate = localDate(base.getFullYear(), monthIndex, day)
+  if (!allowPast && candidate < base) {
+    candidate =
+      month !== null
+        ? localDate(base.getFullYear() + 1, monthIndex, day)
+        : localDate(base.getFullYear(), monthIndex + 1, day)
+  }
+  return candidate
+}
+
+// 「9月12日から14日」「12日から15日まで」「9月12日〜10月2日」などの日付範囲。
+export function extractDateRange(text, { now }) {
+  const base = startOfDayLocal(now)
+
+  // 月あり: M月D日 (sep) [M月]D日
+  const withMonth = text.match(
+    new RegExp(`(\\d{1,2})月(\\d{1,2})日\\s*${RANGE_SEP}\\s*(?:(\\d{1,2})月)?(\\d{1,2})日(?:まで)?`),
+  )
+  if (withMonth) {
+    const start = resolveMonthDay(base, Number(withMonth[1]), Number(withMonth[2]), {
+      allowPast: false,
+    })
+    const endMonth = withMonth[3] ? Number(withMonth[3]) : Number(withMonth[1])
+    let end = localDate(start.getFullYear(), endMonth - 1, Number(withMonth[4]))
+    if (end < start) end = localDate(start.getFullYear() + 1, endMonth - 1, Number(withMonth[4]))
+    return { start, end, spans: [withMonth[0]] }
+  }
+
+  // 月なし: D日 (sep) D日
+  const dayOnly = text.match(new RegExp(`(\\d{1,2})日\\s*${RANGE_SEP}\\s*(\\d{1,2})日(?:まで)?`))
+  if (dayOnly) {
+    const start = resolveMonthDay(base, null, Number(dayOnly[1]), { allowPast: false })
+    let end = localDate(start.getFullYear(), start.getMonth(), Number(dayOnly[2]))
+    if (end < start) end = localDate(start.getFullYear(), start.getMonth() + 1, Number(dayOnly[2]))
+    return { start, end, spans: [dayOnly[0]] }
+  }
+
+  return null
+}

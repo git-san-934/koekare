@@ -50,6 +50,23 @@ describe('eventStore', () => {
     expect(list.map((e) => e.title).sort()).toEqual(['30日夜', '30日朝'].sort())
   })
 
+  it('複数日の終日予定は途中の日でも list に含まれる（期間の重なり）', async () => {
+    await eventStore.add(
+      {
+        title: '京都旅行',
+        startAt: '2026-09-12T00:00:00+09:00',
+        endAt: '2026-09-15T00:00:00+09:00',
+        allDay: true,
+      },
+      { now },
+    )
+    const list = await eventStore.list({
+      from: new Date('2026-09-13T00:00:00+09:00'),
+      to: new Date('2026-09-14T00:00:00+09:00'),
+    })
+    expect(list.map((e) => e.title)).toEqual(['京都旅行'])
+  })
+
   it('list は範囲なしなら全件を startAt 昇順で返す', async () => {
     await eventStore.add(input({ title: 'B', startAt: '2026-08-30T15:00:00+09:00' }), { now })
     await eventStore.add(input({ title: 'A', startAt: '2026-08-29T15:00:00+09:00' }), { now })

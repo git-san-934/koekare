@@ -39,7 +39,14 @@ export default function App() {
   const daysWithEvents = useMemo(() => {
     const set = new Set()
     for (const event of events) {
-      set.add(formatISODate(fromISO(event.startAt)))
+      let day = startOfDayLocal(fromISO(event.startAt))
+      const endDay = startOfDayLocal(fromISO(event.endAt))
+      // 終日の endAt は排他的終端なので1日戻す。最低でも開始日はマークする。
+      const lastDay = event.allDay ? addDays(endDay, -1) : endDay
+      while (day.getTime() <= lastDay.getTime()) {
+        set.add(formatISODate(day))
+        day = addDays(day, 1)
+      }
     }
     return set
   }, [events])

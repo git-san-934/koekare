@@ -1,6 +1,6 @@
 // 認識テキスト → { startAt?, endAt?, allDay?, dateOnly?, title?, transcript }
 import { normalize } from './normalize.js'
-import { extractDate } from './rules/dateRules.js'
+import { extractDate, extractDateRange } from './rules/dateRules.js'
 import { extractTime } from './rules/timeRules.js'
 import { extractDuration } from './rules/durationRules.js'
 import { withDefaults } from '../domain/settings.js'
@@ -33,6 +33,20 @@ function stripSpans(text, spans) {
 export function parseDateTime(rawText, { now = new Date(), settings } = {}) {
   const text = normalize(rawText)
   const resolvedSettings = withDefaults(settings)
+
+  // 日付範囲（「9月12日から14日」など）は複数日の終日予定として先に判定する。
+  const dateRange = extractDateRange(text, { now })
+  if (dateRange) {
+    const rangeTitle = stripSpans(text, dateRange.spans)
+    const rangeResult = {
+      transcript: rawText,
+      allDay: true,
+      startAt: toISO(startOfDayLocal(dateRange.start)),
+      endAt: toISO(addDays(startOfDayLocal(dateRange.end), 1)),
+    }
+    if (rangeTitle) rangeResult.title = rangeTitle
+    return rangeResult
+  }
 
   const date = extractDate(text, { now })
   const time = extractTime(text, { settings: resolvedSettings })

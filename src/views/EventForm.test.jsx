@@ -69,6 +69,34 @@ describe('EventForm（新規）', () => {
     expect(saved.startAt).toBe('2026-08-29T00:00:00+09:00')
   })
 
+  it('終日で開始日・終了日を指定すると複数日の予定になる', async () => {
+    const onSaved = vi.fn()
+    render(
+      <EventForm initial={{}} selectedDate={selectedDate} onSaved={onSaved} onDeleted={noop} onCancel={noop} />,
+    )
+    setField('タイトル', '京都旅行')
+    await userEvent.click(screen.getByLabelText('終日'))
+    setField('開始日', '2026-09-12')
+    setField('終了日', '2026-09-14')
+    await clickSave()
+    await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1))
+    const saved = onSaved.mock.calls[0][0]
+    expect(saved.startAt).toBe('2026-09-12T00:00:00+09:00')
+    expect(saved.endAt).toBe('2026-09-15T00:00:00+09:00')
+  })
+
+  it('終了日が開始日より前だとエラー', async () => {
+    render(
+      <EventForm initial={{}} selectedDate={selectedDate} onSaved={vi.fn()} onDeleted={noop} onCancel={noop} />,
+    )
+    setField('タイトル', '旅行')
+    await userEvent.click(screen.getByLabelText('終日'))
+    setField('開始日', '2026-09-14')
+    setField('終了日', '2026-09-12')
+    await clickSave()
+    expect(await screen.findByText('終了日は開始日以降にしてください')).toBeInTheDocument()
+  })
+
   it('音声からの下書き（transcript あり）は聞き取り内容を表示し source=voice で保存する', async () => {
     const onSaved = vi.fn()
     render(

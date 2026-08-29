@@ -38,10 +38,17 @@ function resolveDuration(settings) {
   return typeof value === 'number' && Number.isFinite(value) ? value : DEFAULT_DURATION_MINUTES
 }
 
-// 終日予定は startAt=その日0:00、endAt=翌日0:00 に正規化する。
-function normalizeAllDay(startAt) {
-  const day = startOfDayLocal(fromISO(startAt))
-  return { startAt: toISO(day), endAt: toISO(addDays(day, 1)) }
+// 終日予定は日境界に正規化する。
+// startAt はその日の 0:00、endAt は「最終日の翌日」の 0:00（排他的な終端）。
+// 単日なら endAt = startAt + 1日、複数日なら endAt にその日数を反映する。
+function normalizeAllDay(startAt, endAt) {
+  const startDay = startOfDayLocal(fromISO(startAt))
+  const endDate = fromISO(endAt)
+  let endBoundary = isValidDate(endDate) ? startOfDayLocal(endDate) : addDays(startDay, 1)
+  if (endBoundary.getTime() <= startDay.getTime()) {
+    endBoundary = addDays(startDay, 1)
+  }
+  return { startAt: toISO(startDay), endAt: toISO(endBoundary) }
 }
 
 export function createEvent(input, { settings, now = new Date() } = {}) {
@@ -50,7 +57,7 @@ export function createEvent(input, { settings, now = new Date() } = {}) {
   let endAt = input.endAt
 
   if (allDay && isValidDate(fromISO(startAt))) {
-    ;({ startAt, endAt } = normalizeAllDay(startAt))
+    ;({ startAt, endAt } = normalizeAllDay(startAt, endAt))
   } else if (!endAt && isValidDate(fromISO(startAt))) {
     endAt = toISO(addMinutes(fromISO(startAt), resolveDuration(settings)))
   }
@@ -78,7 +85,10 @@ export function applyChanges(event, changes, { now = new Date() } = {}) {
   merged.title = (merged.title ?? '').trim()
 
   if (merged.allDay && isValidDate(fromISO(merged.startAt))) {
-    ;({ startAt: merged.startAt, endAt: merged.endAt } = normalizeAllDay(merged.startAt))
+    ;({ startAt: merged.startAt, endAt: merged.endAt } = normalizeAllDay(
+      merged.startAt,
+      merged.endAt,
+    ))
   }
 
   merged.updatedAt = toISO(now)

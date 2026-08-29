@@ -66,6 +66,20 @@ describe('createEvent', () => {
     expect(event.endAt).toBe('2026-08-31T00:00:00+09:00')
   })
 
+  it('複数日の終日予定は endAt に日数を反映する', () => {
+    const event = createEvent(
+      {
+        title: '京都旅行',
+        startAt: '2026-09-12T00:00:00+09:00',
+        endAt: '2026-09-15T00:00:00+09:00',
+        allDay: true,
+      },
+      { settings: DEFAULT_SETTINGS, now },
+    )
+    expect(event.startAt).toBe('2026-09-12T00:00:00+09:00')
+    expect(event.endAt).toBe('2026-09-15T00:00:00+09:00')
+  })
+
   it('id を採番し、createdAt と updatedAt に now を入れる', () => {
     const event = createEvent(
       { title: '会議', startAt: '2026-08-30T15:00:00+09:00' },

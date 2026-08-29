@@ -10,7 +10,9 @@ import {
   isoToTimeInput,
   combineDateAndTime,
   startOfDayLocal,
+  addDays,
   addMinutes,
+  fromISO,
   toISO,
 } from '../datetime.js'
 import './EventForm.css'
@@ -18,17 +20,25 @@ import './EventForm.css'
 function deriveFields(initial, selectedDate) {
   const hasStart = Boolean(initial?.id) || typeof initial?.startAt === 'string'
   if (hasStart) {
+    const allDay = Boolean(initial.allDay)
+    const startDate = isoToDateInput(initial.startAt)
+    // 終日の endAt は「翌日0:00」の排他的終端なので、表示用に1日戻す
+    const endDate =
+      allDay && initial.endAt ? isoToDateInput(toISO(addDays(fromISO(initial.endAt), -1))) : startDate
     return {
       title: initial.title ?? '',
-      dateStr: isoToDateInput(initial.startAt),
-      allDay: Boolean(initial.allDay),
-      startTime: initial.allDay ? '' : isoToTimeInput(initial.startAt),
-      endTime: initial.allDay || !initial.endAt ? '' : isoToTimeInput(initial.endAt),
+      startDate,
+      endDate,
+      allDay,
+      startTime: allDay ? '' : isoToTimeInput(initial.startAt),
+      endTime: allDay || !initial.endAt ? '' : isoToTimeInput(initial.endAt),
     }
   }
+  const startDate = initial?.dateOnly ?? formatISODate(selectedDate)
   return {
     title: initial?.title ?? '',
-    dateStr: initial?.dateOnly ?? formatISODate(selectedDate),
+    startDate,
+    endDate: startDate,
     allDay: Boolean(initial?.allDay),
     startTime: '',
     endTime: '',
@@ -46,15 +56,20 @@ export function EventForm({ initial, selectedDate, onSaved, onDeleted, onCancel 
 
   function buildPayload() {
     if (fields.allDay) {
+      const startDay = startOfDayLocal(combineDateAndTime(fields.startDate, '00:00'))
+      const endDay = startOfDayLocal(
+        combineDateAndTime(fields.endDate || fields.startDate, '00:00'),
+      )
       return {
         title: fields.title,
-        startAt: toISO(startOfDayLocal(combineDateAndTime(fields.dateStr, '00:00'))),
+        startAt: toISO(startDay),
+        endAt: toISO(addDays(endDay, 1)), // 排他的終端（最終日の翌日0:00）
         allDay: true,
       }
     }
-    const start = combineDateAndTime(fields.dateStr, fields.startTime)
+    const start = combineDateAndTime(fields.startDate, fields.startTime)
     const end = fields.endTime
-      ? combineDateAndTime(fields.dateStr, fields.endTime)
+      ? combineDateAndTime(fields.startDate, fields.endTime)
       : addMinutes(start, DEFAULT_DURATION_MINUTES)
     return {
       title: fields.title,
@@ -68,6 +83,9 @@ export function EventForm({ initial, selectedDate, onSaved, onDeleted, onCancel 
     const localErrors = []
     if (!fields.title.trim()) localErrors.push('タイトルを入力してください')
     if (!fields.allDay && !fields.startTime) localErrors.push('開始時刻を入力してください')
+    if (fields.allDay && fields.endDate && fields.endDate < fields.startDate) {
+      localErrors.push('終了日は開始日以降にしてください')
+    }
     if (localErrors.length > 0) {
       setErrors(localErrors)
       return
@@ -129,13 +147,6 @@ export function EventForm({ initial, selectedDate, onSaved, onDeleted, onCancel 
           />
         </div>
 
-        <DateField
-          id="event-date"
-          label="日付"
-          value={fields.dateStr}
-          onChange={(dateStr) => patch({ dateStr })}
-        />
-
         <div className="field">
           <label htmlFor="event-allday" className="field__label">
             終日
@@ -148,20 +159,43 @@ export function EventForm({ initial, selectedDate, onSaved, onDeleted, onCancel 
           />
         </div>
 
-        <TimeField
-          id="event-start"
-          label="開始"
-          value={fields.startTime}
-          disabled={fields.allDay}
-          onChange={(startTime) => patch({ startTime })}
-        />
-        <TimeField
-          id="event-end"
-          label="終了"
-          value={fields.endTime}
-          disabled={fields.allDay}
-          onChange={(endTime) => patch({ endTime })}
-        />
+        {fields.allDay ? (
+          <>
+            <DateField
+              id="event-start-date"
+              label="開始日"
+              value={fields.startDate}
+              onChange={(startDate) => patch({ startDate })}
+            />
+            <DateField
+              id="event-end-date"
+              label="終了日"
+              value={fields.endDate}
+              onChange={(endDate) => patch({ endDate })}
+            />
+          </>
+        ) : (
+          <>
+            <DateField
+              id="event-date"
+              label="日付"
+              value={fields.startDate}
+              onChange={(date) => patch({ startDate: date, endDate: date })}
+            />
+            <TimeField
+              id="event-start"
+              label="開始"
+              value={fields.startTime}
+              onChange={(startTime) => patch({ startTime })}
+            />
+            <TimeField
+              id="event-end"
+              label="終了"
+              value={fields.endTime}
+              onChange={(endTime) => patch({ endTime })}
+            />
+          </>
+        )}
       </div>
 
       {isEdit && (
