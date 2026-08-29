@@ -11,5 +11,7 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.js'],
     include: ['src/**/*.test.{js,jsx}'],
     passWithNoTests: true,
+    // 日時テストは固定タイムゾーンで実行する（CI は UTC のため）。
+    env: { TZ: 'Asia/Tokyo' },
   },
 })

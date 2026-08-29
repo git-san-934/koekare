@@ -79,7 +79,8 @@ export function MicButton({ disabled, onStart }) {
 
 ## テスト規約
 
-- テストフレームワークは Vitest。`describe` / `it` を使う。環境は jsdom（`vitest.config.js`）
+- テストフレームワークは Vitest。`describe` / `it` を使う。既定環境は `node`（コンポーネントは各ファイル先頭に `// @vitest-environment jsdom`）
+- 日時テストは `vitest.config.js` の `test.env.TZ = 'Asia/Tokyo'` で固定タイムゾーンで実行する（CI は UTC のため、`toISO()` の出力や `parseISO()` の解釈がずれてテストが壊れるのを防ぐ）。日時を assert するテストは `now` を固定した Date で書く
 - テストファイルは対象と同じディレクトリに co-locate する（`docs/repository-structure.md` の配置ルール）
 - `it` の説明文は日本語で書き、`docs/product-requirements.md` の受け入れ条件・`docs/functional-design.md` の対応表と対応付けられるようにする
 
