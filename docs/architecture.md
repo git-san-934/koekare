@@ -47,7 +47,7 @@
 - **ローカル動作確認**: `npm run dev`（Vite開発サーバー、PC Chrome）。iPhone実機確認は同一LAN内で `vite --host` を使うか、デプロイ先のHTTPS URLをSafariで開く
 - **コミット規約・ブランチ運用**: `docs/development-guidelines.md` で定義する
 - **デプロイ**: GitHub Actions（`.github/workflows/deploy.yml`）で `main` へのpush時に lint → test → `npm run build` → 成果物（`dist/`）を GitHub Pages へ公開
-  - **ベースパス**: `vite.config.js` の `BASE_PATH` 定数（既定 `'/claude-code-book-template/'`）。GitHub Pages のプロジェクトサイト用。リポジトリ名変更時、またはカスタムドメイン（`'/'`）に切り替える際はこの1行を修正する
+  - **ベースパス**: `vite.config.js` の `BASE_PATH` 定数（`'/koekare/'` = リポジトリ名）。GitHub Pages のプロジェクトサイト用。リポジトリ名変更時、またはカスタムドメイン（`'/'`）に切り替える際はこの1行を修正する
   - **初回のみ手作業**: リポジトリの Settings → Pages → Source を「GitHub Actions」に設定する
 
 ## 技術的制約と要件

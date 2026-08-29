@@ -18,7 +18,7 @@
 
 ```bash
 npm install
-npm run dev      # 開発サーバー（http://localhost:5173/claude-code-book-template/）
+npm run dev      # 開発サーバー（http://localhost:5173/koekare/）
 npm test         # テスト（Vitest）
 npm run lint     # Lint（oxlint）
 npm run build    # 本番ビルド（dist/）
@@ -36,7 +36,7 @@ lint・テスト・ビルドを実行し、GitHub Pages へ公開します。
 初回のみ、リポジトリの **Settings → Pages → Build and deployment → Source** を
 **GitHub Actions** に設定してください。
 
-公開 URL は `https://<ユーザー名>.github.io/claude-code-book-template/` です。
+公開 URL は `https://git-san-934.github.io/koekare/` です。
 リポジトリ名を変更した場合は [`vite.config.js`](vite.config.js) の `BASE_PATH` を合わせて変更します。
 
 ## iPhone で使う（ホーム画面に追加）

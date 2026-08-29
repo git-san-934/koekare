@@ -7,7 +7,7 @@
 旧プロジェクト（`task-manager/`・`devtask/`）は削除済みで、本リポジトリはコエカレ専用の単一アプリ構成とする。アプリ本体はリポジトリ直下に置き、GitHub Pagesへの静的デプロイを単純化する。
 
 ```
-claude-code-book-template/        # 将来 koekare へリネーム可
+koekare/                          # GitHub リポジトリ名（ローカルの作業フォルダ名は別でも可）
 ├── docs/                          # 恒久的ドキュメント（本書もここに含まれる）
 │   ├── product-requirements.md
 │   ├── functional-design.md
