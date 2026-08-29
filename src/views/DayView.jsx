@@ -1,6 +1,7 @@
 import { formatDayHeader } from '../datetime.js'
 import { EventListItem } from '../components/EventListItem.jsx'
 import { MicButton } from '../components/MicButton.jsx'
+import { useSwipe } from '../hooks/useSwipe.js'
 import './DayView.css'
 
 export function DayView({
@@ -19,8 +20,11 @@ export function DayView({
   onStartVoice,
   voiceSupported,
 }) {
+  // 左スワイプで翌日、右スワイプで前日
+  const swipe = useSwipe({ onSwipeLeft: onNextDay, onSwipeRight: onPrevDay })
+
   return (
-    <div className="day-view">
+    <div className="day-view" {...swipe}>
       <header className="day-view__header">
         <button type="button" className="day-view__icon" onClick={onOpenMenu} aria-label="メニュー">
           ☰

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { DayView } from './DayView.jsx'
 
@@ -92,5 +92,39 @@ describe('DayView', () => {
     render(<DayView {...baseProps} onShowAll={onShowAll} />)
     await userEvent.click(screen.getByRole('button', { name: 'すべての予定を一覧で見る' }))
     expect(onShowAll).toHaveBeenCalled()
+  })
+
+  function swipe(el, dx, dy = 0) {
+    fireEvent.touchStart(el, { touches: [{ clientX: 200, clientY: 300 }] })
+    fireEvent.touchEnd(el, { changedTouches: [{ clientX: 200 + dx, clientY: 300 + dy }] })
+  }
+
+  it('左スワイプで onNextDay、右スワイプで onPrevDay を呼ぶ', () => {
+    const onNextDay = vi.fn()
+    const onPrevDay = vi.fn()
+    const { container } = render(
+      <DayView {...baseProps} onNextDay={onNextDay} onPrevDay={onPrevDay} />,
+    )
+    const view = container.querySelector('.day-view')
+
+    swipe(view, -120)
+    expect(onNextDay).toHaveBeenCalledTimes(1)
+
+    swipe(view, 120)
+    expect(onPrevDay).toHaveBeenCalledTimes(1)
+  })
+
+  it('小さな動きや縦方向の動きでは日付を変えない', () => {
+    const onNextDay = vi.fn()
+    const onPrevDay = vi.fn()
+    const { container } = render(
+      <DayView {...baseProps} onNextDay={onNextDay} onPrevDay={onPrevDay} />,
+    )
+    const view = container.querySelector('.day-view')
+
+    swipe(view, -20) // 距離不足
+    swipe(view, -100, 200) // 縦移動が大きい（スクロール）
+    expect(onNextDay).not.toHaveBeenCalled()
+    expect(onPrevDay).not.toHaveBeenCalled()
   })
 })

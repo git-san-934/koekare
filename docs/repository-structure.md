@@ -43,7 +43,8 @@ koekare/                          # GitHub リポジトリ名（ローカルの�
 │   │   ├── EventListItem.jsx
 │   │   └── StorageNotice.jsx      # ストレージ未永続化時のバックアップ案内
 │   ├── hooks/
-│   │   └── useEvents.js           # 指定範囲の予定を読み込むフック
+│   │   ├── useEvents.js           # 指定範囲の予定を読み込むフック
+│   │   └── useSwipe.js            # 横スワイプ検出
 │   ├── speech/
 │   │   └── speechRecognizer.js    # SpeechRecognizer インターフェース + Web Speech API 実装
 │   ├── parser/
