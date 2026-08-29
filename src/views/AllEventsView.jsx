@@ -52,6 +52,15 @@ export function AllEventsView({ onClose, onEditEvent }) {
         {!loading && <span className="all-events__count">全{events.length}件</span>}
       </header>
 
+      <button
+        type="button"
+        className="all-events__back-btn"
+        onClick={onClose}
+        aria-label="日別表示に戻る"
+      >
+        <span aria-hidden="true">📋</span>
+      </button>
+
       {loading ? (
         <p className="all-events__empty">読み込み中…</p>
       ) : events.length === 0 ? (

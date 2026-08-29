@@ -73,4 +73,11 @@ describe('AllEventsView', () => {
     await userEvent.click(screen.getByRole('button', { name: '閉じる' }))
     expect(onClose).toHaveBeenCalled()
   })
+
+  it('赤い丸ボタン（日別表示に戻る）で onClose を呼ぶ', async () => {
+    const onClose = vi.fn()
+    render(<AllEventsView onClose={onClose} onEditEvent={vi.fn()} />)
+    await userEvent.click(screen.getByRole('button', { name: '日別表示に戻る' }))
+    expect(onClose).toHaveBeenCalled()
+  })
 })

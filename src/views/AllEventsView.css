@@ -3,7 +3,25 @@
   margin: 0 auto;
   min-height: 100dvh;
   padding: calc(var(--safe-top) + var(--space-2)) var(--space-4)
-    calc(var(--safe-bottom) + var(--space-5));
+    calc(var(--safe-bottom) + 96px);
+}
+
+/* 日別ビュー左下の赤い丸ボタンと同じ見た目。押すと日別表示へ戻る。 */
+.all-events__back-btn {
+  position: fixed;
+  left: calc(var(--safe-left) + var(--space-4));
+  bottom: calc(var(--safe-bottom) + var(--space-3));
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-list-button);
+  color: #ffffff;
+  font-size: 26px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 }
 
 .all-events__header {
