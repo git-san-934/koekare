@@ -24,18 +24,21 @@ export function DayView({
         <button type="button" className="day-view__icon" onClick={onOpenMenu} aria-label="メニュー">
           ☰
         </button>
-        <div className="day-view__nav">
-          <button type="button" className="day-view__icon" onClick={onPrevDay} aria-label="前の日">
-            ‹
-          </button>
-          <button type="button" className="day-view__date" onClick={onToday}>
-            {formatDayHeader(date)}
-          </button>
-          <button type="button" className="day-view__icon" onClick={onNextDay} aria-label="次の日">
-            ›
-          </button>
-        </div>
-        <button type="button" className="day-view__icon" onClick={onOpenMonth} aria-label="月表示">
+        <button type="button" className="day-view__date" onClick={onToday}>
+          {formatDayHeader(date)}
+        </button>
+        <button type="button" className="day-view__icon" onClick={onPrevDay} aria-label="前の日">
+          ‹
+        </button>
+        <button type="button" className="day-view__icon" onClick={onNextDay} aria-label="次の日">
+          ›
+        </button>
+        <button
+          type="button"
+          className="day-view__icon day-view__month-btn"
+          onClick={onOpenMonth}
+          aria-label="月表示"
+        >
           月
         </button>
       </header>
@@ -48,9 +51,11 @@ export function DayView({
         ) : events.length === 0 ? (
           <p className="day-view__empty">予定なし</p>
         ) : (
-          events.map((event) => (
-            <EventListItem key={event.id} event={event} onClick={onEditEvent} />
-          ))
+          <ul className="day-view__items">
+            {events.map((event) => (
+              <EventListItem key={event.id} event={event} onClick={onEditEvent} />
+            ))}
+          </ul>
         )}
       </main>
 

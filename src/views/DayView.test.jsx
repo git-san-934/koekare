@@ -20,18 +20,32 @@ const baseProps = {
 }
 
 describe('DayView', () => {
-  it('渡された予定を時刻つきで表示する', () => {
+  it('渡された予定を開始〜終了の時刻つきでリスト表示する', () => {
     render(
       <DayView
         {...baseProps}
         events={[
-          { id: '1', title: '歯医者', startAt: '2026-08-29T09:00:00+09:00', allDay: false },
-          { id: '2', title: '打ち合わせ', startAt: '2026-08-29T15:00:00+09:00', allDay: false },
+          {
+            id: '1',
+            title: '歯医者',
+            startAt: '2026-08-29T09:00:00+09:00',
+            endAt: '2026-08-29T10:00:00+09:00',
+            allDay: false,
+          },
+          {
+            id: '2',
+            title: '打ち合わせ',
+            startAt: '2026-08-29T15:00:00+09:00',
+            endAt: '2026-08-29T16:00:00+09:00',
+            allDay: false,
+          },
         ]}
       />,
     )
+    expect(screen.getByRole('list')).toBeInTheDocument()
+    expect(screen.getAllByRole('listitem')).toHaveLength(2)
     expect(screen.getByText('歯医者')).toBeInTheDocument()
-    expect(screen.getByText('09:00')).toBeInTheDocument()
+    expect(screen.getByText('09:00–10:00')).toBeInTheDocument()
     expect(screen.getByText('打ち合わせ')).toBeInTheDocument()
   })
 
