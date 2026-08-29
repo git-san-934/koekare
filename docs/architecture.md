@@ -27,8 +27,11 @@
 | `idb` | IndexedDBのPromiseラッパー |
 | `vite` / `@vitejs/plugin-react` | ビルド・開発サーバー |
 | `vite-plugin-pwa` | Service Worker・マニフェスト |
-| `vitest` / `@testing-library/react` / `jsdom` | テスト |
+| `vitest` / `@testing-library/react` / `@testing-library/user-event` / `jsdom` | テスト |
+| `fake-indexeddb` | テスト時の IndexedDB 実装（`vitest.setup.js` で読み込み） |
 | `oxlint` | Lint |
+
+テストの既定環境は `node`（純粋ロジック・ストア用、高速）。React コンポーネントのテストは各ファイル先頭に `// @vitest-environment jsdom` を付ける。
 
 外部の音声認識・カレンダー同期のSaaS、状態管理ライブラリ（Redux等）、UIコンポーネントライブラリはMVPでは導入しない。
 
@@ -43,7 +46,9 @@
 - **フォーマッタ**: oxlintの整形ルールを使用
 - **ローカル動作確認**: `npm run dev`（Vite開発サーバー、PC Chrome）。iPhone実機確認は同一LAN内で `vite --host` を使うか、デプロイ先のHTTPS URLをSafariで開く
 - **コミット規約・ブランチ運用**: `docs/development-guidelines.md` で定義する
-- **デプロイ**: GitHub Actionsで `main` ブランチへのpush時に `npm run build` → 成果物（`dist/`）をGitHub Pagesへ公開（ワークフローの詳細は実装時に作成）
+- **デプロイ**: GitHub Actions（`.github/workflows/deploy.yml`）で `main` へのpush時に lint → test → `npm run build` → 成果物（`dist/`）を GitHub Pages へ公開
+  - **ベースパス**: `vite.config.js` の `BASE_PATH` 定数（既定 `'/claude-code-book-template/'`）。GitHub Pages のプロジェクトサイト用。リポジトリ名変更時、またはカスタムドメイン（`'/'`）に切り替える際はこの1行を修正する
+  - **初回のみ手作業**: リポジトリの Settings → Pages → Source を「GitHub Actions」に設定する
 
 ## 技術的制約と要件
 

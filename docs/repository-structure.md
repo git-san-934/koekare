@@ -39,7 +39,10 @@ claude-code-book-template/        # 将来 koekare へリネーム可
 │   │   ├── MicButton.jsx
 │   │   ├── DateField.jsx
 │   │   ├── TimeField.jsx
-│   │   └── EventListItem.jsx
+│   │   ├── EventListItem.jsx
+│   │   └── StorageNotice.jsx      # ストレージ未永続化時のバックアップ案内
+│   ├── hooks/
+│   │   └── useEvents.js           # 指定範囲の予定を読み込むフック
 │   ├── speech/
 │   │   └── speechRecognizer.js    # SpeechRecognizer インターフェース + Web Speech API 実装
 │   ├── parser/

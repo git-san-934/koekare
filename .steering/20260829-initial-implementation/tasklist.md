@@ -23,109 +23,115 @@
 
 ---
 
-## 段階2: データ層（ドメイン + ストレージ）
+## 段階2: データ層（ドメイン + ストレージ）✅
 
-- [ ] `src/domain/settings.js`: `DEFAULT_SETTINGS`、`DEFAULT_DURATION_MINUTES` 等の定数、`withDefaults()`
-- [ ] `src/datetime.js`: `toISO` / `fromISO` / `startOfDayLocal` / `addDays` / `addMinutes` / `setTime` / `formatDayHeader` / `formatTime` / `formatMonthTitle` / `getWeekday` / `nextOccurrenceOfWeekday` / `upcomingSaturday`
-- [ ] `src/domain/event.js`: `createEvent` / `applyChanges` / `validateEvent`
-- [ ] `src/domain/event.test.js`: `validateEvent` の各分岐、`createEvent` の `endAt` 補完、`allDay` の日境界
-- [ ] `src/store/db.js`: `getDB()`（`openDB('koekare', 1, { upgrade })`、`events`＋`by_start`、`settings`）
-- [ ] `src/store/eventStore.js`: `add` / `update` / `remove` / `get` / `list({from,to})` / `bulkPut`
-- [ ] `src/store/settingsStore.js`: `get` / `update`
-- [ ] `src/store/eventStore.test.js`: CRUD、`list` の範囲検索、`update` の `updatedAt` 更新（`fake-indexeddb`）
+- [x] `src/domain/settings.js`: `DEFAULT_SETTINGS`、`DEFAULT_DURATION_MINUTES`、`withDefaults()`
+- [x] `src/datetime.js`: ISO 整形・曜日計算・月グリッド等の date-fns ラッパー
+- [x] `src/domain/event.js`: `createEvent` / `applyChanges` / `validateEvent` / `ValidationError`
+- [x] `src/domain/event.test.js`: `validateEvent` の各分岐、`endAt` 補完、`allDay` 日境界、不変項目
+- [x] `src/store/db.js`: `getDB()`（`koekare`、`events`＋`by_start`、`settings`）、`closeDB()`
+- [x] `src/store/eventStore.js`: `add` / `update` / `remove` / `get` / `list({from,to})` / `bulkPut`
+- [x] `src/store/settingsStore.js`: `getSettings` / `updateSettings`
+- [x] `src/store/eventStore.test.js`: CRUD、範囲検索、`updatedAt` 更新（`fake-indexeddb`）
 
-**段階の完了条件**: データ層のテストがグリーン / ドメイン関数はブラウザAPI非依存。
-
----
-
-## 段階3: 表示（日別・月別ビュー）
-
-- [ ] `src/hooks/useEvents.js`: `{ events, loading, error, reload }`、`from/to` 変更で再取得
-- [ ] `src/components/EventListItem.jsx` ＋ CSS
-- [ ] `src/views/DayView.jsx` ＋ CSS: 日移動、予定の時系列表示、フッターの ＋ / 🎤（この段階ではハンドラは仮）
-- [ ] `src/views/MonthView.jsx` ＋ CSS: 月グリッド、予定のある日にマーク、日タップで日別へ
-- [ ] `src/App.jsx`: `view`（`day` / `month`）と `selectedDate` の状態、両ビューの切り替え
-- [ ] `src/views/DayView.test.jsx`: 指定日の予定だけが表示される（`useEvents` はストア経由 or モック）
-
-**段階の完了条件**: 手動でDBに入れた予定が日別・月別に正しい日付で表示され、日/月の移動と相互遷移ができる。
+**段階の完了条件**: ✅ テストグリーン / `domain` はブラウザAPI非依存。
 
 ---
 
-## 段階4: 手入力フロー（予定確認フォーム）
+## 段階3: 表示（日別・月別ビュー）✅
 
-- [ ] `src/components/DateField.jsx` / `src/components/TimeField.jsx` ＋ CSS
-- [ ] `src/views/EventForm.jsx` ＋ CSS: `initial` が `ParsedDateTime`（新規）/ `Event`（編集）の両対応、フィールド（タイトル / 日付 / 終日 / 開始 / 終了）、`validateEvent` 表示、保存で `eventStore.add|update`、編集時のみ削除（確認プロンプト）
-- [ ] `src/App.jsx`: `draft` 状態、＋ボタン→空フォーム、予定タップ→編集フォーム、保存/削除/キャンセル→日別へ戻る
-- [ ] `src/views/EventForm.test.jsx`: タイトル未入力で保存されない / `endAt < startAt` で保存されない / 編集時に既存値が初期表示 / 削除確認
+- [x] `src/hooks/useEvents.js`: `{ events, loading, error, reload }`、`from/to` 変更で再取得
+- [x] `src/components/EventListItem.jsx` ＋ CSS
+- [x] `src/views/DayView.jsx` ＋ CSS: 日移動、予定の時系列表示、フッターの ＋ / 🎤
+- [x] `src/views/MonthView.jsx` ＋ CSS: 月グリッド、予定のある日にマーク、日タップで日別へ
+- [x] `src/App.jsx`: `view`（`day` / `month`）と `selectedDate` の状態、両ビューの切り替え
+- [x] `src/views/DayView.test.jsx`: 予定表示・空状態・終日表記・タップ・音声無効
 
-**段階の完了条件**: `docs/product-requirements.md` 受け入れ条件のうち「手入力での予定CRUD」「日別・月別への反映」「再起動後もデータが残る」を満たす。
-
----
-
-## 段階5: 日時推測エンジン
-
-- [ ] `src/parser/normalize.js` ＋ テスト（全角→半角、漢数字0〜59、空白圧縮）
-- [ ] `src/parser/rules/dateRules.js` ＋ テスト（`docs/functional-design.md`「日付表現の対応範囲」の全行 + 過去日→翌年 / 経過日→翌月）
-- [ ] `src/parser/rules/timeRules.js` ＋ テスト（同「時刻・時間帯表現」の全行 + 午前/午後12時、23時）
-- [ ] `src/parser/rules/durationRules.js` ＋ テスト（同「期間・時刻範囲」の全行）
-- [ ] `src/parser/dateTimeParser.js` ＋ テスト: `now` 固定で結合ケース（「明日の15時から会議」「来週の月曜の朝に歯医者」「金曜10時から11時 打ち合わせ」「時刻なし→`startAt` を返さない」「タイトル空→`title` を返さない」）
-
-**段階の完了条件**: パーサーのテストが対応表の各行を網羅し、グリーン。パーサーは React・ブラウザAPI非依存。
+**段階の完了条件**: ✅ ブラウザで日別・月別の表示と相互遷移を確認。
 
 ---
 
-## 段階6: 音声入力
+## 段階4: 手入力フロー（予定確認フォーム）✅
 
-- [ ] `src/speech/speechRecognizer.js`: `createSpeechRecognizer({ RecognitionCtor })`、`lang='ja-JP'`、エラーコード正規化、`navigator.onLine=false` で `onError('offline')`
-- [ ] `src/speech/speechRecognizer.test.js`: 偽 `RecognitionCtor` 注入、`onResult` 伝播、`not-allowed`→`permission`、オフライン時 `offline`
-- [ ] `src/components/MicButton.jsx` ＋ CSS（`disabled` 対応、`aria-label`）
-- [ ] `src/views/VoiceOverlay.jsx` ＋ CSS: 認識中の暫定テキスト表示、確定で `parseDateTime`→`onParsed`、エラー/無音で日本語メッセージ＋「手入力する」導線
-- [ ] `src/App.jsx`: `recognizing` 状態、マイクボタン→オーバーレイ、`onParsed`→`draft` セットしてフォームへ、非対応環境ではマイクボタンを `disabled`
-- [ ] `src/views/VoiceOverlay.test.jsx`: モック認識器で `onError('offline')` 時にメッセージと手入力導線が出る / 認識成功で推測値がフォームへ渡る
+- [x] `src/components/DateField.jsx` / `src/components/TimeField.jsx` ＋ CSS
+- [x] `src/views/EventForm.jsx` ＋ CSS: 新規/編集両対応、タイトル/日付/終日/開始/終了、
+  バリデーション表示、2段階の削除確認、音声下書きの聞き取り内容表示
+- [x] `src/App.jsx`: `draft` 状態、＋ボタン/予定タップ→フォーム、保存後に該当日を表示
+- [x] `src/views/EventForm.test.jsx`: 9件（未入力・範囲・編集・削除・音声下書き）
 
-**段階の完了条件**: PC Chrome で音声→推測→フォームの一連が動く（実マイク）。認識失敗・許可拒否・オフラインのいずれでも手入力へ継続できる。
-
----
-
-## 段階7: バックアップ（書き出し・読み込み）
-
-- [ ] `src/store/backup.js`: `buildBackup` / `toDownload` / `parseBackup`（`BackupError`）/ `importEvents({mode:'merge'})`
-- [ ] `src/store/backup.test.js`: 往復（書き出し→読み込みで一致）、検証失敗（`app` 不一致 / `schemaVersion` 違い / `endAt<startAt` / `events` 非配列）時に既存データ不変、`merge` の id 上書き
-- [ ] `src/views/BackupMenu.jsx` ＋ CSS: 「書き出し」（`<a download>`）、「読み込み」（`<input type="file">`→結果 or エラー表示）
-- [ ] `src/App.jsx`: `view='backup'`、日別ビューのメニューからの導線
-
-**段階の完了条件**: 受け入れ条件「書き出しで全予定を含む1ファイル」「読み込みで復元」「壊れたファイルで既存データを上書きしない」を満たす。
+**段階の完了条件**: ✅ ブラウザで作成→表示→削除を確認。再起動後もデータ保持（IndexedDB）。
 
 ---
 
-## 段階8: PWA・配信
+## 段階5: 日時推測エンジン ✅
 
-- [ ] `public/icons/`: 192 / 512 / maskable / `apple-touch-icon`（仮アイコンでよい。差し替え可能に）
-- [ ] `vite.config.js` の `vite-plugin-pwa` マニフェスト確定（`name`/`short_name`、`display: standalone`、`lang: ja`、`theme_color`、`background_color`、`icons`、`registerType: 'autoUpdate'`）
-- [ ] `src/main.jsx`: Service Worker 登録、初回に `navigator.storage?.persist()` を要求
-- [ ] `src/App.jsx` or 専用コンポーネント: ストレージ永続化が拒否された場合に「定期的な書き出しを推奨」する控えめな案内
-- [ ] `.github/workflows/deploy.yml`: `main` push で Node 22 → `npm ci` → `npm run lint` → `npm test` → `npm run build` → `actions/upload-pages-artifact`（`dist`）→ `actions/deploy-pages`
-- [ ] `README.md`: 概要、`npm run dev` / `build` / `test` / `lint`、デプロイの仕組み、iPhone での「ホーム画面に追加」手順、データは端末内のみ・バックアップ推奨の注意
-- [ ] （ユーザー作業）GitHub リポジトリ設定で Pages のソースを「GitHub Actions」に設定
-- [ ] 実機確認: デプロイURLを iPhone Safari で開く →「ホーム画面に追加」→ アイコンから全画面起動 → 音声で1件登録 → アプリ終了・再起動で残存 → 機内モードで閲覧
+- [x] `src/parser/normalize.js` ＋ テスト（全角→半角、漢数字0〜99、空白圧縮）
+- [x] `src/parser/rules/dateRules.js` ＋ テスト（対応表の全行 + 過去日→翌年 / 経過日→翌月）
+- [x] `src/parser/rules/timeRules.js` ＋ テスト（全行 + 午前/午後12時、23時）
+- [x] `src/parser/rules/durationRules.js` ＋ テスト（全行）
+- [x] `src/parser/dateTimeParser.js` ＋ テスト: `now` 固定の結合ケース9件（時刻なし→`startAt` なし、
+  タイトル空→`title` なし、漢数字入力 を含む）
 
-**段階の完了条件**: `requirements.md`「受け入れ条件」の本作業固有項目をすべて満たす。
+**段階の完了条件**: ✅ 36件グリーン。対応表の各行を網羅。parser は React・ブラウザAPI非依存。
 
 ---
 
-## 段階9: 仕上げ・ドキュメント反映
+## 段階6: 音声入力 ✅
 
-- [ ] `design.md`「恒久ドキュメントへの反映」の各項目を `docs/` に反映（`docs:` コミット）
-  - `functional-design.md`: 読み込み重複ポリシー（`merge`）
-  - `repository-structure.md`: `src/hooks/`、`vitest.setup.js`
-  - `architecture.md`: `base` パスと GitHub Pages 設定手順、`fake-indexeddb`
-- [ ] 全体のリファクタ確認（`docs/development-guidelines.md` の規約準拠、マジックナンバー、レイヤ分離）
-- [ ] このタスクリストの全チェック完了を確認
+- [x] `src/speech/speechRecognizer.js`: `createSpeechRecognizer({ RecognitionCtor })`、`ja-JP`、
+  エラー正規化、`navigator.onLine=false` で `onError('offline')`、`isSpeechSupported()`
+- [x] `src/speech/speechRecognizer.test.js`: 7件（注入・伝播・マッピング・offline）
+- [x] `src/components/MicButton.jsx` ＋ CSS（`disabled`・`aria-label`）
+- [x] `src/views/VoiceOverlay.jsx` ＋ CSS: 暫定テキスト表示、確定で `parseDateTime`→`onParsed`、
+  エラー/無音で日本語メッセージ＋「手入力する」導線
+- [x] `src/App.jsx`: `recognizing` 状態、非対応環境はマイクボタン無効
+- [x] `src/views/VoiceOverlay.test.jsx`: 4件（offline導線 / 認識成功 / 途中経過 / キャンセル）
+
+**段階の完了条件**: ✅ ブラウザで確認。マイク不許可でも「手入力する」で継続でき、行き止まりなし。
+
+---
+
+## 段階7: バックアップ（書き出し・読み込み）✅
+
+- [x] `src/store/backup.js`: `buildBackup` / `toDownload` / `parseBackup`（`BackupError`）/ `importEvents`（merge）
+- [x] `src/store/backup.test.js`: 9件（往復一致、各種検証失敗で既存データ不変、id 上書き）
+- [x] `src/views/BackupMenu.jsx` ＋ CSS: 書き出し（`<a download>`）、読み込み（`<input type="file">`）
+- [x] `src/App.jsx`: `view='backup'`、メニュー導線
+
+**段階の完了条件**: ✅ ブラウザでメニュー表示・遷移を確認。壊れたファイルは既存データを上書きしない（テスト済）。
+
+---
+
+## 段階8: PWA・配信 ✅（一部ユーザー作業が残る）
+
+- [x] `public/icons/`: 192 / 512 / maskable / `apple-touch-icon`（仮アイコン。差し替え前提）
+- [x] `vite.config.js` の `vite-plugin-pwa` マニフェスト（`name`/`short_name`、`standalone`、`lang: ja`、
+  `theme_color`、`background_color`、`icons`、`registerType: 'autoUpdate'`）
+- [x] `src/main.jsx`: Service Worker 登録、初回に `navigator.storage?.persist()` を要求
+- [x] `src/components/StorageNotice.jsx`: 未永続化時にバックアップを促す控えめな案内
+- [x] `.github/workflows/deploy.yml`: `main` push で lint → test → build → GitHub Pages
+- [x] `README.md`: 概要・コマンド・デプロイ・ホーム画面追加・データの扱い
+- [ ] **（ユーザー作業）** GitHub の Settings → Pages → Source を「GitHub Actions」に設定
+- [ ] **（ユーザー作業）** 実機確認: デプロイURLを iPhone Safari で開く →「ホーム画面に追加」→
+  全画面起動 → 音声で1件登録 → 再起動で残存 → 機内モードで閲覧
+
+**段階の完了条件**: ローカルでは達成（build/SW/オフライン起動）。実機での最終確認はデプロイ後にユーザーが実施。
+
+---
+
+## 段階9: 仕上げ・ドキュメント反映 ✅
+
+- [x] `docs/` へ反映（`docs:` コミット）
+  - `functional-design.md`: 読み込み重複ポリシー（merge に確定）
+  - `repository-structure.md`: `src/hooks/`、`src/components/StorageNotice.jsx`
+  - `architecture.md`: `BASE_PATH`、GitHub Pages 設定手順、`fake-indexeddb`、テスト環境方針、Vite v8
+- [x] リファクタ確認（レイヤ分離：`domain`/`parser` はブラウザAPI非依存、マジックナンバーは定数化）
+- [x] タスクリストの更新
 
 **全体の完了条件**:
-- `docs/product-requirements.md`「受け入れ条件」全項目 ＋ `requirements.md`「受け入れ条件」全項目を満たす
-- `npm run lint` / `npm test` グリーン、`npm run build` 成功
-- GitHub Pages に自動デプロイされ、iPhone 実機で音声登録まで確認済み
+- [x] `npm run lint` / `npm test`（89件）グリーン、`npm run build` 成功
+- [x] ブラウザで主要フロー（音声→手入力フォールバック、手入力CRUD、日別/月別、バックアップ画面）を確認
+- [ ] **（ユーザー作業）** GitHub Pages 有効化 → 自動デプロイ → iPhone 実機で音声登録まで確認
 
 ---
 
