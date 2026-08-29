@@ -40,6 +40,15 @@ export function startOfDayLocal(date) {
   return startOfDay(date)
 }
 
+export function startOfWeekLocal(date) {
+  return startOfWeek(date, { weekStartsOn: 0 })
+}
+
+// 端末ローカルの 0:00 の Date を組み立てる（monthIndex は 0=1月）。
+export function localDate(year, monthIndex, day) {
+  return new Date(year, monthIndex, day, 0, 0, 0, 0)
+}
+
 export function addDays(date, amount) {
   return fnsAddDays(date, amount)
 }
