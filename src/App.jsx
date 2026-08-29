@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { DayView } from './views/DayView.jsx'
 import { MonthView } from './views/MonthView.jsx'
+import { EventForm } from './views/EventForm.jsx'
 import { useEvents } from './hooks/useEvents.js'
 import {
   startOfDayLocal,
@@ -15,6 +16,7 @@ export default function App() {
   const [view, setView] = useState('day')
   const [selectedDate, setSelectedDate] = useState(() => startOfDayLocal(new Date()))
   const [monthDate, setMonthDate] = useState(() => startOfDayLocal(new Date()))
+  const [draft, setDraft] = useState(null)
 
   const range = useMemo(() => {
     if (view === 'month') {
@@ -24,7 +26,7 @@ export default function App() {
     return { from: selectedDate, to: addDays(selectedDate, 1) }
   }, [view, selectedDate, monthDate])
 
-  const { events, loading } = useEvents(range)
+  const { events, loading, reload } = useEvents(range)
 
   const daysWithEvents = useMemo(() => {
     const set = new Set()
@@ -33,6 +35,46 @@ export default function App() {
     }
     return set
   }, [events])
+
+  function openNewEvent() {
+    setDraft({})
+    setView('form')
+  }
+
+  function openEditEvent(event) {
+    setDraft(event)
+    setView('form')
+  }
+
+  async function handleSaved(saved) {
+    setSelectedDate(startOfDayLocal(fromISO(saved.startAt)))
+    setDraft(null)
+    setView('day')
+    await reload()
+  }
+
+  async function handleDeleted() {
+    setDraft(null)
+    setView('day')
+    await reload()
+  }
+
+  function handleCancel() {
+    setDraft(null)
+    setView('day')
+  }
+
+  if (view === 'form') {
+    return (
+      <EventForm
+        initial={draft}
+        selectedDate={selectedDate}
+        onSaved={handleSaved}
+        onDeleted={handleDeleted}
+        onCancel={handleCancel}
+      />
+    )
+  }
 
   if (view === 'month') {
     return (
@@ -63,8 +105,8 @@ export default function App() {
         setView('month')
       }}
       onOpenMenu={() => {}}
-      onNewEvent={() => {}}
-      onEditEvent={() => {}}
+      onNewEvent={openNewEvent}
+      onEditEvent={openEditEvent}
       onStartVoice={() => {}}
       voiceSupported={false}
     />

@@ -23,6 +23,7 @@ import { ja } from 'date-fns/locale'
 const ISO_WITH_OFFSET = "yyyy-MM-dd'T'HH:mm:ssxxx"
 
 export function toISO(date) {
+  if (!(date instanceof Date) || !isValid(date)) return ''
   return format(date, ISO_WITH_OFFSET)
 }
 
@@ -71,6 +72,19 @@ export function formatMonthTitle(date) {
 
 export function formatISODate(date) {
   return format(date, 'yyyy-MM-dd')
+}
+
+// <input type="date"> / <input type="time"> の値と Date の相互変換。
+export function combineDateAndTime(dateStr, timeStr) {
+  return parseISO(`${dateStr}T${timeStr}:00`)
+}
+
+export function isoToDateInput(iso) {
+  return format(fromISO(iso), 'yyyy-MM-dd')
+}
+
+export function isoToTimeInput(iso) {
+  return format(fromISO(iso), 'HH:mm')
 }
 
 // from 以降で weekday（0..6）に最初に該当する日の 0:00。
