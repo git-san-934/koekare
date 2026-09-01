@@ -17,7 +17,8 @@
   border: none;
   background: var(--color-list-button);
   color: #ffffff;
-  font-size: 26px;
+  font-size: 18px;
+  font-weight: 600;
   display: grid;
   place-items: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);

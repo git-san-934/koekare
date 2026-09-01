@@ -58,7 +58,7 @@ export function AllEventsView({ onClose, onEditEvent }) {
         onClick={onClose}
         aria-label="日別表示に戻る"
       >
-        <span aria-hidden="true">📋</span>
+        日別
       </button>
 
       {loading ? (

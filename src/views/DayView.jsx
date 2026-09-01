@@ -77,7 +77,7 @@ export function DayView({
           onClick={onShowAll}
           aria-label="すべての予定を一覧で見る"
         >
-          <span aria-hidden="true">📋</span>
+          一覧
         </button>
         <button
           type="button"
